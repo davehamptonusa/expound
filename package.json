@@ -1,0 +1,18 @@
+{
+  "author": "Dave Hampton <david.hampton@gmail.com> (davehamptonusa)",
+  "name": "attr5",
+  "description": "Attibute Creator that uses ECMAscrript 5 Property Descriptors to change attribute construction into a more declarative syntax.  Modeled loosly after MOOSE (perl) and JOOSE (javaScript) but not requiring the porting or entire objects to a new system.  It intermingles with fine with objects not using this attibute constructor.  Designed for Node.js.",
+  "version": "0.0.0",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/davehamptonusa/attr5.git"
+  },
+  "scripts": {
+    "test": "node_modules/tap/bin/tap.js test/"
+  },
+  "engines": {
+    "node": ">=0.4.12"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
