@@ -22,15 +22,21 @@ build(myObject).property({
 	builder: function () {//runs to build the value if not passed in or, if lazy, on initial get
 	},
 	type: 'array', //or a prototypeOf or a custom type like isValidUser
-	//later will add handles for delegation
+	//TO BE ADDED IN FUTURE
+	//coerce: Takes a value and uses the defined type to create the property.  for example, pass in the user ID, but have it auto and build the user object and store that in the property
+	//delgates: useful for calling other methods in the context of this attribute
 });
 ```	  
 
 In the above example, running `myObject.foo = 43;` will run like this:
+
 ```
 things to do before setting the value or running a function
+
 \\value actually set to 43
+
 things to do after setting the value or running a function
+
 other important function to run after this value is set or function run
 ```
 
@@ -49,6 +55,11 @@ other important function to run after this value is set or function run
 ### configurable
 > Same as ECMAScript 5: True if and only if this property shows up during enumeration of the properties on the corresponding object.
 
+### trigger
+> _Non-function property:_ The trigger option is a CODE reference which will be called after the value of the attribute is set. The CODE ref is passed the instance itself, the updated value, and the original value if the attribute was already set.
+
+
+> _Function property:_ The trigger option is a CODE reference which will be called after the function is called.  It will be passed the return value of the function. The original values of the function will still be returned to the orignal caller.  If you wish to change these values, consider using `wrap`.
 
 isa => $type_name
 The isa option uses Moose's type constraint facilities to set up runtime type checking for this attribute. Moose will perform the checks during class construction, and within any accessors. The $type_name argument must be a string. The string may be either a class name or a type defined using Moose's type definition features. (Refer to Moose::Util::TypeConstraints for information on how to define a new type, and how to retrieve type meta-data).
