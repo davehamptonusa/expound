@@ -3,6 +3,9 @@ The purpose of buildProperties is to be able to construct your objects in a decl
 It uses the new ecma script 5 property descriptors to works its mojo.  Normally, property descriptors can be either data descriptors or accessor descriptors - but not both.  buildProperty enables you to have the functionailty of both in a familiar syntax.
 
 ```javascript
+var build, introspect;  //the two variables are just for semantic naming.  Require as you wish... 
+build = introspect = require(buildProperty);
+
 build(myObject).property({
 	name: 'foo',
 	value: 42,
@@ -66,34 +69,23 @@ other important function to run after this value is set or function run
 
 > _Function property:_ The trigger option is a CODE reference which will be called after the function is called.  It will be passed the return value of the function. The original values of the function will still be returned to the orignal caller.  If you wish to change these values, consider using `wrap`.
 
-isa => $type_name
-The isa option uses Moose's type constraint facilities to set up runtime type checking for this attribute. Moose will perform the checks during class construction, and within any accessors. The $type_name argument must be a string. The string may be either a class name or a type defined using Moose's type definition features. (Refer to Moose::Util::TypeConstraints for information on how to define a new type, and how to retrieve type meta-data).
+ALSO coming....
 
-required => (1|0)
-This marks the attribute as being required. This means a value must be supplied during class construction, or the attribute must be lazy and have either a default or a builder. Note that c<required> does not say anything about the attribute's value, which can be undef.
-
-
-lazy => (1|0)??
-This will tell the class to not create this slot until absolutely necessary. If an attribute is marked as lazy it must have a default or builder supplied.
-
-trigger => $code
-The trigger option is a CODE reference which will be called after the value of the attribute is set. The CODE ref is passed the instance itself, the updated value, and the original value if the attribute was already set.
-
-wrap
-
-handles => ARRAY | HASH | REGEXP | ROLE | ROLETYPE | DUCKTYPE | CODE
-
-builder => Str
-The value of this key is the name of the method that will be called to obtain the value used to initialize the attribute. See the builder option docs in Class::MOP::Attribute and/or Moose::Cookbook::Basics::Recipe8 for more information.
-
-default => SCALAR | CODE
-The value of this key is the default value which will initialize the attribute.
+Meta information about properties...
+```javascript
+introspect(myObj).hasBeenSet("a") -> returns whether the myObj.a has ever been set.
+introspect(myObj).clear("a") -> sets value to undefined and hasBeenSet to false.
+introspect(myObj).history("a") -> returns an array of the stored history of the properties values.
+introspect(myObj).isRequired("a");
+introspect(myObj).isConfigurable("a");
+introspect(myObj).hasBuilder("a");
+introspect(myObj).isLazy("a");
+introspect(myObj).hasTrigger("a");
+introspect(myObj).typeOf("a");
+```
+You can see where this is going....
 
 
-clearer => Str
-Creates a method allowing you to clear the value. See the clearer option docs in Class::MOP::Attribute for more information.
 
-predicate => Str
-Creates a method to perform a basic test to see if a value has been set in the attribute. See the predicate option docs in Class::MOP::Attribute for more information.
 
 
