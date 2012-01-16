@@ -72,10 +72,11 @@ other important function to run after this value is set or function run
 ALSO coming....
 
 Meta information about properties...
+
 ```javascript
-introspect(myObj).hasBeenSet("a") -> returns whether the myObj.a has ever been set.
-introspect(myObj).clear("a") -> sets value to undefined and hasBeenSet to false.
-introspect(myObj).history("a") -> returns an array of the stored history of the properties values.
+introspect(myObj).hasBeenSet("a") -> returns whether the myObj.a has ever been set.;
+introspect(myObj).clear("a") -> sets value to undefined and hasBeenSet to false.;
+introspect(myObj).history("a") -> returns an array of the stored history of the properties values.;
 introspect(myObj).isRequired("a");
 introspect(myObj).isConfigurable("a");
 introspect(myObj).hasBuilder("a");
