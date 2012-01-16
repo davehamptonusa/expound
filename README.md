@@ -25,6 +25,8 @@ build(myObject).property({
 	//TO BE ADDED IN FUTURE
 	//coerce: Takes a value and uses the defined type to create the property.  for example, pass in the user ID, but have it auto and build the user object and store that in the property
 	//delgates: useful for calling other methods in the context of this attribute
+	//enableRollback:  Allows attribute values to be rolled back.  Takes integer (0++).  Zero means no rollback.  Keeps history up to value given. keyword 'forever' keeps indefinate history until you run out of memory...
+	//rollback: takes an integer.  Rolls back the value to the nth previous version.  Fails if version doesn't exist.  enableRollback must be true.  Rollbacks will be wrapped and trigger.  Not available for functions.
 });
 ```	  
 
@@ -46,14 +48,17 @@ other important function to run after this value is set or function run
 ### value
 >Specifies the value of the property.  If not passed in, specify a builder to build the value immediately (like a default) or -- if lazy is `true` builds the first time its value is called.  See lazy below fir more info. 
 
-### writable
+### writable (default: true)
 > Boolean to set whether or not you may change the value of the property
 
-### enumerable
+### enumerable (default: true)
 > Same as ECMAScript 5: True if and only if the type of this property descriptor may be changed and if the property may be deleted from the corresponding object.
 
-### configurable
+### configurable (default: false)
 > Same as ECMAScript 5: True if and only if this property shows up during enumeration of the properties on the corresponding object.
+
+### required (default: false)
+> Boolean stating whether the value is required at construction.  If required, a value must be passed in or it must have a builder method.
 
 ### trigger
 > _Non-function property:_ The trigger option is a CODE reference which will be called after the value of the attribute is set. The CODE ref is passed the instance itself, the updated value, and the original value if the attribute was already set.
