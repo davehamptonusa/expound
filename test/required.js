@@ -4,7 +4,7 @@ var test = require("tap").test,
 
 //All atributes are Accessor Descriptors.  Writable and value are spoofed by modifying get and set
 test("methods", { skip:false }, function (t) {
-	t.plan(7);
+	t.plan(9);
 	t.ok(true, "true is ok -- all is right with the universe");
 	var obj = {}, keys;
 	//Test a required value
@@ -24,8 +24,19 @@ test("methods", { skip:false }, function (t) {
 	});
 	t.equal(typeof obj.a, 'number', 'The object is created with value and not required');
 
-	//Test a required value without a value
+	//Test a required value without a value - corect way with t.throws
 	obj = {};
+	t.throws(	function() {
+		build(obj).property({
+			name: "a",
+			required: true
+		})
+	}, 'Throws an error');
+	t.equal(typeof obj.a, 'undefined', 'The object is not created.');
+
+	//Test a required value without a value - not as good way
+	obj = {};
+
 	try {
 		build(obj).property({
 			name: "a",
