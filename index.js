@@ -4,31 +4,37 @@ var build,
 				name: "buildPropertyError",
 				message: msg
 			}
-	  };
+		},
+		alteredObjects = {};
 
-build = function(oObj) {
-  build.obj = oObj;
-  return build;
+build = function(obj) {
+	//need to return a version of build derived from prototype.
+	// that has the object tied to it.
+	var returnBuild = Object.create(build);
+	returnBuild.obj = obj;
+	return returnBuild;
 }
 
 build.property = function(spec) {
 	var 
-      self = this,
-			setFunction,
-			valueType = typeof spec.value, 
-			valueHasBeenSet = valueType === 'undefined' ? false : true;
-			value = valueHasBeenSet ? spec.value : undefined,
-			name = spec.name,
-      oWritable = typeof spec.writable !== 'undefined' ? spec.writable : true,
-      oEnumerable = typeof spec.enumerable !== 'undefined' ? spec.enumerable : true,
-      oConfigurable = typeof spec.configurable !== 'undefined' ? spec.configurable : false,
-      oRequired = typeof spec.required !== 'undefined' ? spec.required : false,
-      oBuilder = typeof spec.builder === 'function' ? spec.builder : undefined,
-	    oTrigger = spec.trigger || function () {},
-	    oWrap = spec.wrap || undefined;
+			self = this,
+			prop = {};
+
+	//define the basics of the new property based on the spec
+		prop.valueType = typeof spec.value, 
+		prop.valueHasBeenSet = prop.valueType === 'undefined' ? false : true;
+		prop.value = prop.valueHasBeenSet ? spec.value : undefined,
+		prop.name = spec.name,
+		prop.writable = typeof spec.writable !== 'undefined' ? spec.writable : true,
+		prop.enumerable = typeof spec.enumerable !== 'undefined' ? spec.enumerable : true,
+		prop.configurable = typeof spec.configurable !== 'undefined' ? spec.configurable : false,
+		prop.required = typeof spec.required !== 'undefined' ? spec.required : false,
+		prop.builder = typeof spec.builder === 'function' ? spec.builder : undefined,
+		prop.trigger = spec.trigger || function () {},
+		prop.wrap = spec.wrap || undefined;
 
 	//test for required
-	oRequired && !valueHasBeenSet && !oBuilder && Throw('Required Property with no value or builder method'); 
+	prop.required && !prop.valueHasBeenSet && !prop.builder && Throw('Required Property with no value or builder method'); 
 
 
 
@@ -36,23 +42,24 @@ build.property = function(spec) {
 
 
 
-	setFunction = function(newValue){
+	prop.setFunction = function(newValue){
 		//Check for writability
-		oWritable && (value = newValue);
+		prop.writable && (prop.value = newValue);
 
 		//fire trigger
-		oTrigger();
+		prop.trigger();
 
-		//even attempting to set a non writable object returns the attmepted value.  weird.
+		//even attempting to set a non writable object returns the attmepted value.	weird.
 		return newValue;
-	};  
-	Object.defineProperty(self.obj, name, {
-		get : function(){ return value; },  
-		set : function (newValue) { setFunction(newValue)},
-		enumerable : oEnumerable,  
-		configurable : oConfigurable
-	});  	
+	};	
+	Object.defineProperty(self.obj, prop.name, {
+		get : function(){ return prop.value; },	
+		set : function (newValue) { prop.setFunction(newValue)},
+		enumerable : prop.enumerable,	
+		configurable : prop.configurable
+	});		
 	return true;
 };
 
 module.exports = build;
+
