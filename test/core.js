@@ -1,5 +1,5 @@
 var test = require("tap").test,
-	build = require('../index.js');
+	expound = require('../index.js');
 
 //All atributes are Accessor Descriptors.  Writable and value are spoofed by modifying get and set
 test("methods", { skip:false }, function (t) {
@@ -13,8 +13,8 @@ test("methods", { skip:false }, function (t) {
 
 	//Test a that the object is properly recieving a prototype and not being broken
 	// or interfering with other object altering
-	holder1 = build(obj1);
-	holder2 = build(obj2);
+	holder1 = expound(obj1);
+	holder2 = expound(obj2);
 	
 	holder1.property({
 		name: "a",

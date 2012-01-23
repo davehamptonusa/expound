@@ -1,12 +1,11 @@
-The purpose of buildProperties is to be able to construct your objects in a declarative fashion.  This allows all of the relavant code to be logically near each other in the codebase as well as affords built in functionailty for things you do anyways.  Type checking, triggers, wrappers, private variables etc,
+The purpose of 'expound' is to be able to construct your objects in a declarative fashion.  This allows all of the relavant code to be logically near each other in the codebase as well as affords built in functionailty for things you do anyways.  Type checking, triggers, wrappers, private variables etc,
 
-It uses the new ecma script 5 property descriptors to works its mojo.  Normally, property descriptors can be either data descriptors or accessor descriptors - but not both.  buildProperty enables you to have the functionailty of both in a familiar syntax.
+It uses the new ecma script 5 property descriptors to works its mojo.  Normally, property descriptors can be either data descriptors or accessor descriptors - but not both.  'expound' enables you to have the functionailty of both in a familiar syntax.
 
 ```javascript
-var build, introspect;  //the two variables are just for semantic naming.  Require as you wish... 
-build = introspect = require(buildProperty);
+var expound = require(expound);// expound is a useful word that can be used as either to define or describe.
 
-build(myObject).property({
+expound(myObject).property({
 	name: 'foo',
 	value: 42,
 	writable: true,
@@ -74,15 +73,15 @@ ALSO coming....
 Meta information about properties...
 
 ```javascript
-introspect(myObj).hasBeenSet("a") -> returns whether the myObj.a has ever been set.;
-introspect(myObj).clear("a") -> sets value to undefined and hasBeenSet to false.;
-introspect(myObj).history("a") -> returns an array of the stored history of the properties values.;
-introspect(myObj).isRequired("a");
-introspect(myObj).isConfigurable("a");
-introspect(myObj).hasBuilder("a");
-introspect(myObj).isLazy("a");
-introspect(myObj).hasTrigger("a");
-introspect(myObj).typeOf("a");
+expound(myObj).hasBeenSet("a") -> returns whether the myObj.a has ever been set.;
+expound(myObj).clear("a") -> sets value to undefined and hasBeenSet to false.;
+expound(myObj).history("a") -> returns an array of the stored history of the properties values.;
+expound(myObj).isRequired("a");
+expound(myObj).isConfigurable("a");
+expound(myObj).hasBuilder("a");
+expound(myObj).isLazy("a");
+expound(myObj).hasTrigger("a");
+expound(myObj).typeOf("a");
 ```
 You can see where this is going....
 

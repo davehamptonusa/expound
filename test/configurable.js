@@ -1,6 +1,6 @@
 var test = require("tap").test,
 		_ = require("underscore"),
-		build = require('../index.js');
+		expound = require('../index.js');
 
 //All atributes are Accessor Descriptors.  Writable and value are spoofed by modifying get and set
 test("methods", { skip:false }, function (t) {
@@ -8,7 +8,7 @@ test("methods", { skip:false }, function (t) {
 	t.ok(true, "true is ok -- all is right with the universe");
 	var obj = {}, descriptor;
 	//Test a configurable value
-	build(obj).property({
+	expound(obj).property({
 		name: "a",
 		value: 37,
 		configurable: true
@@ -18,7 +18,7 @@ test("methods", { skip:false }, function (t) {
 
 	obj = {};
 	//Test a configurable value but using default
-	build(obj).property({
+	expound(obj).property({
 		name: "a",
 		value: 37,
 	});
@@ -27,7 +27,7 @@ test("methods", { skip:false }, function (t) {
 
 	obj = {};
 	//Test an non-enumerable value
-	build(obj).property({
+	expound(obj).property({
 		name: "a",
 		value: 37,
 		configurable: false

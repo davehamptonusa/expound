@@ -1,5 +1,5 @@
 var test = require("tap").test,
-	build = require('../index.js');
+	expound = require('../index.js');
 
 //All atributes are Accessor Descriptors.  Writable and value are spoofed by modifying get and set
 test("methods", { skip:false }, function (t) {
@@ -8,7 +8,7 @@ test("methods", { skip:false }, function (t) {
 
 	var obj = {};
 	//Test a non writable value
-	build(obj).property({
+	expound(obj).property({
 		name: "a",
 		value: 37,
 		writable: false
@@ -18,7 +18,7 @@ test("methods", { skip:false }, function (t) {
   t.equal(obj.a, 37, 'Value was not changed when assigned');
 
 	//Test a writable property
-	build(obj).property({
+	expound(obj).property({
 		name: "b",
 		value: 37,
 		writable: true
@@ -28,7 +28,7 @@ test("methods", { skip:false }, function (t) {
   t.equal(obj.b, 38, 'Value was changed when assigned');
 
 	//Test the default (writable)
-	build(obj).property({
+	expound(obj).property({
 		name: "c",
 		value: 37
 	});
