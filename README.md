@@ -63,7 +63,7 @@ other important function to run after this value is set or function run
 > Boolean stating whether the value is required at construction.  If required, a value must be passed in or it must have a builder method.
 
 ### trigger
-> The trigger option is a CODE reference which will be called after the value of the attribute is set. The CODE ref is passed the instance itself, the updated value, and the original value if the attribute was already set.
+> The trigger option is a CODE reference which will be called after the value of the attribute is set. The function is called in the context of the calling attribute and is passed the updated value, and the old value.  Triggers are not fired at object creation. Triggers do not alter the return value or the value.  Attempting to set the attribute that the trigger is tied to within the trigger function will cause an infinite recursion.  I don't think anyone has time for that.
 
 ALSO coming....
 

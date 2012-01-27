@@ -25,6 +25,7 @@ expound.property = function(spec) {
 		prop.valueType = typeof spec.value, 
 		prop.valueHasBeenSet = prop.valueType === 'undefined' ? false : true;
 		prop.value = prop.valueHasBeenSet ? spec.value : undefined,
+		prop.oldValue = undefined;
 		prop.name = spec.name,
 		prop.writable = typeof spec.writable !== 'undefined' ? spec.writable : true,
 		prop.enumerable = typeof spec.enumerable !== 'undefined' ? spec.enumerable : true,
@@ -54,12 +55,12 @@ expound.property = function(spec) {
 
 
 	prop.setFunction = function(newValue){
-		prop.oldValue = this[prop.name];
+		prop.oldValue = prop.value;
 		//Check for writability
 		prop.writable && (prop.value = newValue) && (prop.valueHasBeenSet = true);
 
 		//fire trigger
-		prop.trigger(prop.oldValue, prop.value);
+		prop.trigger.call(self.obj, prop.value, prop.oldValue);
 
 		//even attempting to set a non writable object returns the attmepted value.	weird.
 		return newValue;
