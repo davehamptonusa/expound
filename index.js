@@ -5,7 +5,8 @@ var expound,
 				message: msg
 			}
 		},
-		alteredObjects = {};
+		alteredObjects = {},
+		_ = require('underscore');
 
 expound = function(obj) {
 	//need to return a version of build derived from prototype.
@@ -30,10 +31,13 @@ expound.property = function(spec) {
 		prop.configurable = typeof spec.configurable !== 'undefined' ? spec.configurable : false,
 		prop.required = typeof spec.required !== 'undefined' ? spec.required : false,
 		prop.lazy = typeof spec.lazy !== 'undefined' ? spec.lazy : false,
-		prop.builder = typeof spec.builder === 'function' ? spec.builder : undefined,
+		prop.builder = spec.builder || undefined,
 		prop.trigger = spec.trigger || function () {},
 		prop.wrap = spec.wrap || undefined;
 
+	// test that builder and trigger are functions
+		prop.builder && (_.isFunction(prop.builder) || Throw('Builder Attribute must be a Function'));
+		_.isFunction(prop.trigger) || Throw('Trigger Attribute must be a Function');
 	//test for required
 	prop.required && !prop.valueHasBeenSet && !prop.builder && Throw('Required Property with no value or builder method'); 
 
@@ -50,11 +54,12 @@ expound.property = function(spec) {
 
 
 	prop.setFunction = function(newValue){
+		prop.oldValue = this[prop.name];
 		//Check for writability
-		prop.writable && (prop.value = newValue);
+		prop.writable && (prop.value = newValue) && (prop.valueHasBeenSet = true);
 
 		//fire trigger
-		prop.trigger();
+		prop.trigger(prop.oldValue, prop.value);
 
 		//even attempting to set a non writable object returns the attmepted value.	weird.
 		return newValue;

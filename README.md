@@ -63,10 +63,7 @@ other important function to run after this value is set or function run
 > Boolean stating whether the value is required at construction.  If required, a value must be passed in or it must have a builder method.
 
 ### trigger
-> _Non-function property:_ The trigger option is a CODE reference which will be called after the value of the attribute is set. The CODE ref is passed the instance itself, the updated value, and the original value if the attribute was already set.
-
-
-> _Function property:_ The trigger option is a CODE reference which will be called after the function is called.  It will be passed the return value of the function. The original values of the function will still be returned to the orignal caller.  If you wish to change these values, consider using `wrap`.
+> The trigger option is a CODE reference which will be called after the value of the attribute is set. The CODE ref is passed the instance itself, the updated value, and the original value if the attribute was already set.
 
 ALSO coming....
 
