@@ -4,7 +4,7 @@ var test = require("tap").test,
 
 //All atributes are Accessor Descriptors.  Writable and value are spoofed by modifying get and set
 test("methods", { skip:false }, function (t) {
-	t.plan(38);
+	t.plan(41);
 	t.ok(true, "true is ok -- all is right with the universe");
 	var obj = {}, keys;
 	//Test a lazy value
@@ -191,4 +191,22 @@ test("methods", { skip:false }, function (t) {
 			lazy: false
 		});
 	}, 'Throws an error');
+
+	//Test the context of builder method
+	var obj = {b:'foo'};
+	//Test a lazy value
+	t.doesNotThrow(	function() {
+		expound(obj).property({
+			name: "a",
+			builder: function () {
+				return this.b
+			},
+			required: true,
+			lazy: true
+		});
+	}, 'Building a required, lazy property with a builder and value does  not throw an error.');
+
+	t.type(obj.a, 'string', 'The object is created and typeof works');
+	t.equal(obj.a, 'foo', 'The object is with the builder method and evals correctly');
+
 });

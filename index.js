@@ -46,7 +46,7 @@ expound.property = function(spec) {
 	prop.required && !prop.valueHasBeenSet && !prop.builder && Throw('Required Property with no value or builder method'); 
 
 	//Assign a value to default or non-lazy builders
-	!prop.valueHasBeenSet && prop.builder && !prop.lazy && ((prop.value = prop.builder()) || Throw('Builder Function does not return'));
+	!prop.valueHasBeenSet && prop.builder && !prop.lazy && ((prop.value = prop.builder.call(self.ob)) || Throw('Builder Function does not return'));
   
 	//Throw an error for Building a non-required lazy object without a value or builder throws an error.
 	!prop.valueHasBeenSet && !prop.required && prop.lazy && !prop.builder && Throw('Inconcievable Situation.  Not Required, lazy object without value or builder.');
@@ -68,7 +68,7 @@ expound.property = function(spec) {
 	}));
 
 	prop.getFunction = function() {
-		!prop.valueHasBeenSet && prop.builder && ((prop.value = prop.builder()) || Throw('Builder Function does not return'));
+		!prop.valueHasBeenSet && prop.builder && ((prop.value = prop.builder.call(self.obj)) || Throw('Builder Function does not return'));
 		return prop.value;	
 	};
 

@@ -60,10 +60,15 @@ In the above example, running `myObject.foo = 43;` will run like this:
 
 ### builder
 > The builder method, if defined, is called in the context of the attribute's object.  When the value has never been set to populate the value of the attribute.  The builder method is called either immediately, if `lazy:false` and serves to assign default values.
+
 > However, to delay building until needed, you can set `lazy=true` and the value is not built until the value is required.  This is handy if the buildtime of the value is heavy and perhaps isn't often needed.  Like an md5 sum.  It's generally a good practice to move build methods to the lazy state.
 
-### lazy (default: false)
+### lazy (default: true)
 > Defines when the builder method runs if an attribute is created without a value.  Immediately upon creating it (like a default value) if `lazy=false` or only upon retrieving the value if `lazy=true`.
+
+> Object constructors should _always_ have lazy builders.  If not, the builder will throw an error and the attribute will force itself into lazy mode, setting the correct value when the value is retrieved.
+
+> USING LAZY BUILDERS IS THE PREFERRED METHOD OF ALL VALUE ASSIGNMENTS.
 
 ### trigger
 > The trigger option is a CODE reference which will be called after the value of the attribute is set. The function is called in the context of the attribute's object and is passed the updated value, and the old value.  Triggers are not fired at object creation. Triggers do not alter the return value or the value.  Attempting to set the attribute that the trigger is tied to within the trigger function will cause an infinite recursion.  I don't think anyone has time for that.
