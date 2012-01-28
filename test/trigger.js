@@ -62,6 +62,7 @@ test("methods", { skip:false }, function (t) {
 	obj = {};
 	expound(obj).property({
 		name: "a",
+		lazy: false,
 		trigger: function (nv, ov) {
 			this.nv = nv;
 			this.ov = ov;

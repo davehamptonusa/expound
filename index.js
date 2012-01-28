@@ -32,7 +32,7 @@ expound.property = function(spec) {
 		prop.enumerable = typeof spec.enumerable !== 'undefined' ? spec.enumerable : true,
 		prop.configurable = typeof spec.configurable !== 'undefined' ? spec.configurable : false,
 		prop.required = typeof spec.required !== 'undefined' ? spec.required : false,
-		prop.lazy = typeof spec.lazy !== 'undefined' ? spec.lazy : false,
+		prop.lazy = typeof spec.lazy !== 'undefined' ? spec.lazy : true,
 		prop.builder = spec.builder || undefined,
 		prop.trigger = spec.trigger || function () {},
 		prop.wrap = spec.wrap || undefined;
