@@ -58,6 +58,13 @@ In the above example, running `myObject.foo = 43;` will run like this:
 ### required (default: false)
 > Boolean stating whether the value is required at construction.  If required, a value must be passed in or it must have a builder method.
 
+### builder
+> the builder method, if defined, is called when the value has never been set to populate the value of the attribute.  The builder method is called either immediately, if `lazy:false` and serves to assign default values.
+> However, to delay building until needed, you can set `lazy=true` and the value is not built until the value is required.  This is handy if the buildtime of the value is heavy and perhaps isn't often needed.  Like an md5 sum.  It's generally a good practice to move build methods to the lazy state.
+
+### lazy (default: false)
+> Defines when the builder method runs if an attribute is created without a value.  Immediately upon creating it (like a default value) if `lazy=false` or only upon retrieving the value if `lazy=true`.
+
 ### trigger
 > The trigger option is a CODE reference which will be called after the value of the attribute is set. The function is called in the context of the calling object and is passed the updated value, and the old value.  Triggers are not fired at object creation. Triggers do not alter the return value or the value.  Attempting to set the attribute that the trigger is tied to within the trigger function will cause an infinite recursion.  I don't think anyone has time for that.
 
