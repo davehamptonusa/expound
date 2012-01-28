@@ -2,7 +2,7 @@ The purpose of 'expound' is to be able to construct your objects in a declarativ
 
 It uses the new ecma script 5 property descriptors to works its mojo.  Normally, property descriptors can be either data descriptors or accessor descriptors - but not both.  'expound' enables you to have the functionailty of both in a familiar syntax.
 
-	```javascript
+```javascript
 	var expound = require(expound);// expound is a useful word that can be used as either to define or describe.
 
 	expound(myObject).property({
@@ -31,7 +31,7 @@ It uses the new ecma script 5 property descriptors to works its mojo.  Normally,
 		//enableRollback:  Allows attribute values to be rolled back.  Takes integer (0++).  Zero means no rollback.  Keeps history up to value given. keyword 'forever' keeps indefinate history until you run out of memory...
 		//rollback: takes an integer.  Rolls back the value to the nth previous version.  Fails if version doesn't exist.  enableRollback must be true.  Rollbacks will be wrapped and trigger.  Not available for functions.
 	});
-	```	  
+```	  
 
 In the above example, running `myObject.foo = 43;` will run like this:
 
