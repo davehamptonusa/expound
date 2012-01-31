@@ -13,7 +13,8 @@ As a side note, asynchronous assignments can easily be handled through using a m
 ## Quick Examples
 
 ```javascript
-	var expound = require(expound);// expound is a useful word that can be used as either to define or describe.
+	var expound = require(expound);
+	// expound is a useful word that can be used as either to define or describe.
 
 	expound(myObject).property({
 		name: 'foo',
