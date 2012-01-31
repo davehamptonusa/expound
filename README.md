@@ -54,7 +54,7 @@ In the above example, running `myObject.foo = 43;` will run like this:
 ## Download
 
 Releases are available for download from
-[GitHub](http://github.com/davehamptonusa/expound/downloads).
+[GitHub](http://github.com/davehamptonusa/expound/tags).
 Alternatively, you can install using Node Package Manager (npm):
 
     npm install expound
