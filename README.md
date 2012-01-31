@@ -1,12 +1,12 @@
 # expound.js
 
-The purpose of 'expound' is to be able to construct your objects in a declarative fashion.  This allows all of the relavant code to be logically near each other in the codebase as well making convenient functionailty for things you do anyways.  Type checking, triggers, wrappers, private variables etc.
+The purpose of 'expound' is to be able to construct your objects in a declarative fashion.  This allows all of the relavant code to be logically near each other in the codebase as well making convenient functionailty for things you do anyways.  Type checking, triggers, wrappers, private variables etc.  Primarily for use in constructors.
 
 It uses the new ecma script 5 property descriptors to works its mojo.  Normally, property descriptors can be either data descriptors or accessor descriptors - but not both.  'expound' enables you to have the functionailty of both in a familiar syntax.
 
 Because it uses ECMAScript 5, it's not yet safe to use in the browser world, but should be fine to use in a firefox or chrome extension. It has been primarialy designed for use with [node.js](http://nodejs.org).
 
-expound provides around 10 attributes useful for quickly defining an attribute. It also has a handful of functions useful fordefining types at both an object and a "global" level.
+expound provides around 10 attributes useful for quickly defining an attribute. It also has a handful of functions useful for defining types at both an object and a "global" level.
 
 As a side note, asynchronous assignments can easily be handled through using a module like [async.js](https://github.com/caolan/async) or other asynchronous tool.  Application level type constraints can easily be added by subclassing expound to your own local version, adding types at the global level, and then exporting the localized expound to your various modules.
 
