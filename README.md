@@ -40,7 +40,7 @@ As a side note, asynchronous assignments can easily be handled through using a m
 
 	//To add a new type, "globally"
 	expound.addType('isLessThanTen', function (value) {
-		return (expound.types.isNumber(value) && value < 10) ? true: false;
+		return expound.types.isNumber(value) && value < 10;
 	});
 ```	  
 
@@ -134,6 +134,20 @@ These are the attributes for the `property() method`
 > The wrap function is called in the context of the calling object and allows you to run code and possibly alter the input (right hand value of the assigment - so the '37' in `obj.a=37`).  Although you have access to the returnValue of the assignment, you can not change the return value from the assignment.  Further, re-setting the value of the attribute within the attributes wrap function may easily cause an infinite recursion. 
 
 > In most cases it is better to use a coercion to augment the right-hand value on the way in, a type to validate a right-hand value and a trigger to enact some form of code on the way out.
+
+<A NAME="type" />
+### type
+> The type attribute allows you to specify the type of the attibute for type checking.  You can add your own custom types at the object or "global" level.
+
+> Types you get for free are provided through [underscore](http://documentcloud.github.com/underscore):
+
+* isBoolean
+* isArray
+* isDate
+* isFunction
+* isNumber
+* isRegExp
+* isString
 
 ## Methods
 
