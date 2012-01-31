@@ -1,6 +1,6 @@
 # expound.js
 
-The purpose of 'expound' is to be able to construct your objects in a declarative fashion.  This allows all of the relavant code to be logically near each other in the codebase as well as affords built in functionailty for things you do anyways.  Type checking, triggers, wrappers, private variables etc.
+The purpose of 'expound' is to be able to construct your objects in a declarative fashion.  This allows all of the relavant code to be logically near each other in the codebase as well making convenient functionailty for things you do anyways.  Type checking, triggers, wrappers, private variables etc.
 
 It uses the new ecma script 5 property descriptors to works its mojo.  Normally, property descriptors can be either data descriptors or accessor descriptors - but not both.  'expound' enables you to have the functionailty of both in a familiar syntax.
 
@@ -65,7 +65,6 @@ Alternatively, you can install using Node Package Manager (npm):
 
 These are the attributes for the `property() method`
 
-* [forEach](#forEach)
 * [name](#name)
 * [value](#value)
 * [writable](#writable)
@@ -83,6 +82,7 @@ These are the attributes for the `property() method`
 * [property](#property)
 * [setType](#setType)
 
+###[Road Map](#roadmap)
 
 ## Attributes
 
@@ -213,10 +213,8 @@ __EXAMPLE__
 	var meta_myObj = expound(myObj);
 ````
 ---------------------------------------
-
+<A NAME="roadmap" />
 ## On the RoadMap
-		//expound.addType()
-		//object.addType();
 		//coerce: Takes a value and uses the defined type to create the property.  for example, pass in the user ID, but have it auto and build the user object and store that in the property
 		//delgates: useful for calling other methods in the context of this attribute
 		//enableRollback:  Allows attribute values to be rolled back.  Takes integer (0++).  Zero means no rollback.  Keeps history up to value given. keyword 'forever' keeps indefinate history until you run out of memory...
@@ -238,8 +236,3 @@ expound(myObj).hasTrigger("a");
 expound(myObj).typeOf("a");
 ```
 You can see where this is going....
-
-
-
-
-
