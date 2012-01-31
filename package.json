@@ -1,11 +1,11 @@
 {
   "author": "Dave Hampton <david.hampton@gmail.com> (davehamptonusa)",
   "name": "expound",
-  "description": "Attibute Creator that uses ECMAscrript 5 Property Descriptors to change attribute construction into a more declarative syntax.  It offers type checking, triggers, wrappers, required, builders, default values, lazy builders and cooerciens.  It intermingles with fine with objects not using this attibute constructor and with other attributes in the same object not using this constructor.  Modeled loosly after MOOSE (perl) and JOOSE (javaScript) but not requiring the porting or entire objects to a new system.  Keep your code, but make it clearer.  expound. Designed for ECMAscript 5 and wicked coders everywhere.",
-  "version": "0.2.0",
+  "description": "Declarative Construciton of Objects.  It offers type checking, triggers, wrappers, required, builders, default values, lazy builders and cooerciens.  Doesn't force you to use it on every attribute in your object or every object in your application.  Modeled loosly after MOOSE (perl) and JOOSE (javaScript). Make your code clearer.  expound it. Designed for ECMAscript 5 and wicked coders everywhere.",
+  "version": "0.2.1",
   "repository": {
     "type": "git",
-    "url": "git://github.com/davehamptonusa/attr5.git"
+    "url": "git://github.com/davehamptonusa/expound.git"
   },
   "scripts": {
     "test": "node_modules/tap/bin/tap.js test/"
