@@ -16,7 +16,8 @@ As a side note, asynchronous assignments can easily be handled through using a m
 	var expound = require(expound);
 	// expound is a useful word that can be used as either to define or describe.
 
-	expound(myObject).property({
+	var meta_myObj = expound(myObject).property({
+		//this shows every available option
 		name: 'foo',
 		value: 42,
 		writable: true,
@@ -35,9 +36,16 @@ As a side note, asynchronous assignments can easily be handled through using a m
 		},
 		builder: function () {//runs to build the value if not passed in or, if lazy, on initial get
 		},
-		type: 'isArray',
+		type: 'isNumber',
 	});
-
+	
+	meta_myObject.property({
+		//this shows a typical one, reusing an object handle
+		name: 'bar',
+		builder: function () { return this.foo * 42},
+		type: 'isNumber',
+	});
+	
 	//To add a new type, "globally"
 	expound.addType('isLessThanTen', function (value) {
 		return expound.types.isNumber(value) && value < 10;
@@ -196,7 +204,7 @@ __EXAMPLE__
 	// CREATE "myObj.a" WITH A TYPE CONSTRAINT
 
 	var meta_myObj = expound(myObj).property({
-		name: ('a'),
+		name: 'a',
 		type: 'isArray'
 	});
 ````
