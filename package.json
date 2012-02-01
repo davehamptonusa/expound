@@ -2,7 +2,7 @@
   "author": "Dave Hampton <david.hampton@gmail.com> (davehamptonusa)",
   "name": "expound",
   "description": "Declarative Construciton of Objects.  It offers type checking, triggers, wrappers, required, builders, default values, lazy builders and cooerciens.  Doesn't force you to use it on every attribute in your object or every object in your application.  Modeled loosly after MOOSE (perl) and JOOSE (javaScript). Make your code clearer.  expound it. Designed for ECMAscript 5 and wicked coders everywhere.",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "repository": {
     "type": "git",
     "url": "git://github.com/davehamptonusa/expound.git"
