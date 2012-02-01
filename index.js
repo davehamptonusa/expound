@@ -6,14 +6,22 @@ var
 				message: msg
 			}
 		},
-		alteredObjects = {},
 		util = require('util'),
-		_ = require('underscore');
+		_ = require('underscore'),
+		defaultProps = {
+			writable: true,
+			enumerable: true,
+			comfigurable: false,
+			required: false,
+			lazy: true,
+			valueHasBeenSet: false
+		};
 
 expound = function(obj) {
-	//need to return a version of build derived from prototype.
+	// return a version of expound derived from prototype.
 	// that has the object tied to it.
 	var instance = Object.create(expound);
+
 	instance.obj = obj;
 	//for subclassing of types
 	instance.types = Object.create(expound.types);
@@ -22,36 +30,37 @@ expound = function(obj) {
 
 expound.property = function(spec) {
 	var 
-			self = this,
-			prop = {};
-
-		//define the basics of the new property based on the spec
-		prop.valueType = typeof spec.value, 
-		prop.valueHasBeenSet = prop.valueType === 'undefined' ? false : true;
-		prop.value = prop.valueHasBeenSet ? spec.value : undefined,
-		prop.oldValue = undefined;
-		prop.name = spec.name,
-		prop.writable = typeof spec.writable !== 'undefined' ? spec.writable : true,
-		prop.enumerable = typeof spec.enumerable !== 'undefined' ? spec.enumerable : true,
-		prop.configurable = typeof spec.configurable !== 'undefined' ? spec.configurable : false,
-		prop.required = typeof spec.required !== 'undefined' ? spec.required : false,
-		prop.lazy = typeof spec.lazy !== 'undefined' ? spec.lazy : true,
-		prop.builder = spec.builder || undefined,
-		prop.trigger = spec.trigger || function () {},
-		prop.wrap = spec.wrap || undefined;
-	  spec.type && typeof self.types[spec.type] && (prop.type = spec.type);
-		prop.passesTypeConstraint = function () {
-			if (this.type && !self.types[this.type](this.value)) {
-				this.value = undefined;
-				this.valueHasBeenSet = false;
-				Throw('Value does not pass type constraint. Expecting: ' + this.type);
+		self = this,
+		prop = {
+			//tool for type constraint checking....
+			passesTypeConstraint: function () {
+				if (this.type && !self.types[this.type](this.value)) {
+					this.value = undefined;
+					this.valueHasBeenSet = false;
+					Throw('Value does not pass type constraint. Expecting: ' + this.type);
+				}
 			}
-		}
+		};
 
-		// test that builder and trigger and wrap are functions
-		prop.builder && (_.isFunction(prop.builder) || Throw('Builder Attribute must be a Function'));
-		prop.wrap && (_.isFunction(prop.wrap) || Throw('Wrap Attribute must be a Function'));
-		_.isFunction(prop.trigger) || Throw('Trigger Attribute must be a Function');
+	//make sure the spec isn't full of garbage
+	//Name
+	_.isString(spec.name) || Throw('The name of the attribute must be a string');
+	// Booleans
+	_.each( _.intersection(['writable', 'enumerable', 'configurable', 'required', 'lazy'], Object.keys(spec)), function (attr) {
+		_.isBoolean(spec[attr]) || Throw(attr + ' attribute must be boolean');
+	});
+	//Functions
+	_.each( _.intersection(['wrap', 'trigger', 'builder'], Object.keys(spec)), function (attr) {
+		_.isFunction(spec[attr]) || Throw(attr + ' attribute must be ia Function');
+	});
+	//Type Constraints
+	spec.type && (typeof self.types[spec.type] || Throw(spec.type + ' is not a defined Type Constraint'));
+
+	//Extend our model
+	_.extend(prop, defaultProps, spec);
+
+	//Flag whether the value has been set
+	_.include(Object.keys(prop), 'value') && (prop.valueHasBeenSet = true);
 
 	//test for required
 	prop.required && !prop.valueHasBeenSet && !prop.builder && Throw('Required Property with no value or builder method'); 
@@ -61,12 +70,12 @@ expound.property = function(spec) {
 		((prop.value = prop.builder.call(self.ob)) || Throw('Builder Function does not return'));
 		prop.valueHasBeenSet = true;
 	}
-  
+
 	//Throw an error for Building a non-required lazy object without a value or builder throws an error.
 	!prop.valueHasBeenSet && !prop.required && prop.lazy && !prop.builder && Throw('Inconcievable Situation.  Not Required, lazy object without value or builder.');
 
 	//check for type passing and reset values if need be
-  prop.valueHasBeenSet && prop.passesTypeConstraint();
+	prop.valueHasBeenSet && prop.passesTypeConstraint();
 
 
 	//Create the base setFunciton
@@ -75,7 +84,7 @@ expound.property = function(spec) {
 
 		//Check for writability
 		prop.writable && (prop.value = newValue) && (prop.valueHasBeenSet = true);
-    prop.passesTypeConstraint();
+		prop.passesTypeConstraint();
 
 		//even attempting to set a non writable object returns the attmepted value.	weird.
 		return newValue;
@@ -98,7 +107,7 @@ expound.property = function(spec) {
 		definition.set = function (newValue) { 
 			prop.setValue(newValue)
 			//fire trigger
-			prop.trigger.call(self.obj, prop.value, prop.oldValue);
+			prop.trigger && prop.trigger.call(self.obj, prop.value, prop.oldValue);
 		};
 		definition.enumerable = prop.enumerable;	
 		definition.configurable = prop.configurable;
@@ -132,7 +141,7 @@ expound.types = {
 };
 
 expound.addType = function (name, func) {
-  this.types[name] = func;
+	this.types[name] = func;
 	return this;
 }
 

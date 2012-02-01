@@ -44,7 +44,7 @@ test("methods", { skip:false }, function (t) {
 		expound(obj).property({
 			name: "a",
 			type: 'isArray',
-			lazy: 'false',
+			lazy: false,
 			value: ['foo', 'bar']
 		});
 	}, 'Does not throw as it is expecting an Array');
