@@ -11,7 +11,7 @@ var
 		defaultProps = {
 			writable: true,
 			enumerable: true,
-			comfigurable: false,
+			configurable: false,
 			required: false,
 			lazy: true,
 			valueHasBeenSet: false
@@ -31,6 +31,7 @@ expound = function(obj) {
 expound.property = function(spec) {
 	var 
 		self = this,
+		target = _.include(Object.keys(this), 'obj') ? this.obj : this,
 		prop = {
 			//tool for type constraint checking....
 			passesTypeConstraint: function () {
@@ -71,9 +72,6 @@ expound.property = function(spec) {
 		prop.valueHasBeenSet = true;
 	}
 
-	//Throw an error for Building a non-required lazy object without a value or builder throws an error.
-	!prop.valueHasBeenSet && !prop.required && prop.lazy && !prop.builder && Throw('Inconcievable Situation.  Not Required, lazy object without value or builder.');
-
 	//check for type passing and reset values if need be
 	prop.valueHasBeenSet && prop.passesTypeConstraint();
 
@@ -92,14 +90,14 @@ expound.property = function(spec) {
 
 	//wrap the setFunction if wrapping
 	prop.wrap && (prop.setValue = _.wrap(prop.setValue, function (func, newValue) {
-		prop.wrap.call(self.obj, func, newValue);
+		prop.wrap.call(target, func, newValue);
 	}));
 
-	Object.defineProperty(self.obj, prop.name, function () {
+	Object.defineProperty(target, prop.name, function () {
 		var definition = {};
 		
 		definition.get = function() {
-			!prop.valueHasBeenSet && prop.builder && ((prop.value = prop.builder.call(self.obj)) || Throw('Builder Function does not return'));
+			!prop.valueHasBeenSet && prop.builder && ((prop.value = prop.builder.call(target)) || Throw('Builder Function does not return'));
 			prop.valueHasBeenSet = true;
 			prop.passesTypeConstraint();
 			return prop.value;	
@@ -107,7 +105,7 @@ expound.property = function(spec) {
 		definition.set = function (newValue) { 
 			prop.setValue(newValue)
 			//fire trigger
-			prop.trigger && prop.trigger.call(self.obj, prop.value, prop.oldValue);
+			prop.trigger && prop.trigger.call(target, prop.value, prop.oldValue);
 		};
 		definition.enumerable = prop.enumerable;	
 		definition.configurable = prop.configurable;
@@ -117,33 +115,32 @@ expound.property = function(spec) {
 };
 
 expound.types = {
-	"isArray": function (arg) {
-		return _.isArray(arg);
-	},
-	"isBoolean": function (arg) {
-		return _.isBoolean(arg);
-	},
-	"isDate": function (arg) {
-		return _.isDate(arg);
-	},
-	"isFunction": function (arg) {
-		return _.isFunction(arg);
-	},
-	"isNumber": function (arg) {
-		return _.isNumber(arg);
-	},
-	"isString": function (arg) {
-		return _.isString(arg);
-	},
-	"isRegExp": function (arg) {
-		return _.isRegExp(arg);
-	},
+	"isArray": function (arg) { return _.isArray(arg); },
+	"isBoolean": function (arg) { return _.isBoolean(arg); },
+	"isDate": function (arg) { return _.isDate(arg); },
+	"isFunction": function (arg) { return _.isFunction(arg); },
+	"isNumber": function (arg) { return _.isNumber(arg); },
+	"isString": function (arg) { return _.isString(arg); },
+	"isRegExp": function (arg) { return _.isRegExp(arg); }
 };
 
-expound.addType = function (name, func) {
-	this.types[name] = func;
-	return this;
-}
+//expound.property when called without an object extends expound itself.  Useful for plug-ins
+expound.property({
+	name: "addType",
+	value: function (name, func) {
+		this.types[name] = func;
+		return this;
+	},
+	writable: false
+});
+
+expound.property({
+	name: 'hasType',
+	value: function (name) {
+		return _.isFunction(this.types[name]);
+	},
+	writable: false
+});
 
 module.exports = expound;
 

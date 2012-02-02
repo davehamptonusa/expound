@@ -4,7 +4,7 @@ var test = require("tap").test,
 
 //All atributes are Accessor Descriptors.  Writable and value are spoofed by modifying get and set
 test("methods", { skip:false }, function (t) {
-	t.plan(24);
+	t.plan(27);
 	t.ok(true, "true is ok -- all is right with the universe");
 	var obj = {}, keys;
 	obj = {};
@@ -166,6 +166,10 @@ test("methods", { skip:false }, function (t) {
 		var foo = obj.b;
 	}, 'Value passes custom type check');
 
+	t.equal(handler.hasType('isLessThanTen'), true, "handler reports type");
+	t.equal(handler.hasType('isLessThanTwenty'), false, "handler reports type");
+	t.equal(expound.hasType('isLessThanTen'), false, "Custom type not global");
+
 	//time to make a new GLOBAL type
 	obj = {};
 	var handler = expound(obj);
@@ -173,14 +177,14 @@ test("methods", { skip:false }, function (t) {
 		expound.addType('isLessThanTen', function (value) {
 			return value < 10 ? true: false;
 		});
-	}, "Creating a new Type doesnt throw an error.");
+	}, "Creating a new Global Type doesnt throw an error.");
 	t.throws( function () {
 		handler.property({
 			name: 'a',
 			type: 'isLessThanTen',
 			value: 11
 		});
-	}, 'Creating a property with a custom type that fails, barfs');
+	}, 'Creating a property with a custom global type that fails, barfs');
 
 	t.doesNotThrow(function () {
 		handler.property({
@@ -189,7 +193,7 @@ test("methods", { skip:false }, function (t) {
 			value: 1
 		});
 		var foo = obj.b;
-	}, 'Value passes custom type check');
+	}, 'Value passes gloabl custom type check');
 	//time to make a new and use an existing type to speed things up
 	obj = {};
 	var handler = expound(obj);
@@ -197,7 +201,7 @@ test("methods", { skip:false }, function (t) {
 		expound.addType('isLessThanTen', function (value) {
 			return (expound.types.isNumber(value) && value < 10) ? true: false;
 		});
-	}, "Creating a new Type doesnt throw an error.");
+	}, "Creating a new global Type doesnt throw an error.");
 	t.throws( function () {
 		handler.property({
 			name: 'a',

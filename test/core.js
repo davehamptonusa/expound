@@ -3,7 +3,7 @@ var test = require("tap").test,
 
 //All atributes are Accessor Descriptors.  Writable and value are spoofed by modifying get and set
 test("methods", { skip:false }, function (t) {
-	t.plan(15);
+	t.plan(19);
 	t.ok(true, "true is ok -- all is right with the universe");
 
 	var obj1 = {},
@@ -22,13 +22,35 @@ test("methods", { skip:false }, function (t) {
 		value: 37,
 		writable: true
 	});
+	holder1.property({
+		name: "b",
+		value: {},
+		writable: true
+	});
 	holder2.property({
 		name: "a",
 		value: 38,
 		writable: true
 	});
 	t.equal(obj1.a, 37, 'Value was properly set and is retrievable');
+	t.type(obj1.b, 'object', 'Value was properly set and is retrievable');
 	t.equal(obj2.a, 38, 'Value was properly set and is retrievable');
+
+	//Now expound an expounded item
+  t.doesNotThrow( function () {
+		expound(obj1.b).property({
+			name: "a",
+			value: 38,
+			writable: true
+		});
+	}, "expounding an expounded attribute doesn't blow up");
+	t.equal(obj1.b.a, 38, "retrieving a value from expounded attribute doesn't blow up");
+
+	t.throws( function () {
+		holder1.property({
+			value: 37
+		});
+	}, "Throws an error without a name.");
 
 	//test a builder with values set in the builder
 	Obj3={};

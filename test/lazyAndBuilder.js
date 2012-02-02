@@ -68,7 +68,7 @@ test("methods", { skip:false }, function (t) {
 	t.equal(obj.a, 37, 'The object is with the builder method and evals correctly');
 
 	obj = {};
-	t.throws(	function() {
+	t.doesNotThrow(	function() {
 		expound(obj).property({
 			name: "a",
 			lazy: true
