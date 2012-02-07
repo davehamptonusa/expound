@@ -37,6 +37,7 @@ As a side note, asynchronous assignments can easily be handled through using a m
 		builder: function () {//runs to build the value if not passed in or, if lazy, on initial get
 		},
 		type: 'isNumber',
+		coerce: true
 	});
 	
 	meta_myObject.property({
@@ -85,6 +86,7 @@ These are the attributes for the `property() method`
 * [wrap](#wrap)
 * [builder](#builder)
 * [type](#type)
+* [coerce](#coerce)
 
 ### Methods
 
@@ -156,6 +158,12 @@ These are the attributes for the `property() method`
 * isNumber
 * isRegExp
 * isString
+* isObject
+
+<A NAME="coerce" />
+### coerce (default: false)
+> If true, attempts to coerce a value based on any coercions associated with the type field if the initial type constraint fails.
+
 
 ## Methods
 
@@ -203,6 +211,7 @@ __EXAMPLE__
 ````javascript
 	// CREATE "myObj.a" WITH A TYPE CONSTRAINT
 
+  var myObj={};
 	var meta_myObj = expound(myObj).property({
 		name: 'a',
 		type: 'isArray'
@@ -214,26 +223,69 @@ __EXAMPLE__
 <A NAME="addType" />
 ### addType(NAME, FUNCTION)
 
-Used to addTypes to either the "Global" expound instance or a local meta-object handle of an object.
+Used to add types to either the "Global" expound instance or a local meta-object handle of an object.  Types usually extend an existing type. This is useful for creating hierachies of type checks and for coercions.
 
 __ARGUMENTS__
 
-* NAME - A Unique Name to add as a type.  Names are stored in a hash, and handle types descend from the global type, so you can overwrite them.
+* NAME - A Unique Name to add as a type.  Names are stored in a hash, and handle types descend from the global type, so you can overwrite them.  Names are shared amongst all types (Global, object and Sub) so you may find it useful to use a naming convention like `isInteger::IsNumber`.  But it is not necssary.
+* EXTENDS - The name of the type that this is extending.  This type must exist in either the object or the global typelist.  It will recursively check its type extension hierachry starting at the top and working down.  So if `isInteger` extends `isNumber, and `isLessThanTen` extends `isInteger` expound will check to see if the value passes `isNumber`, then `isInteger` and then finally `isLessTahnTen`.
 * FUNCTION (VALUE) - The function should parse the value and return true if it passes, false otherwise.
 
 __RETURNS__
 
-boolean
+this
 
 __EXAMPLE__
 
 ````javascript
 
 	//To add a new type, "globally"
-	expound.addType('isLessThanTen', function (value) {
-		return (expound.types.isNumber(value) && value < 10) ? true: false;
+	expound.addType('isLessThanTen', 'isNumber', function (value) {
+		return value < 10;
 	});
 	var meta_myObj = expound(myObj);
+````
+---------------------------------------
+
+<A NAME="addCoercion" />
+### addCoercion(TYPE, FROM, FUNCTION)
+
+Used to add coercions to types.  All Coercions are added to types and are called if the property constructor has `coerce: true` set.  They can, however, be added to an object, via its meta-handle, or to expound directly.  The value is first test against the FROM value, which is a named type or sub-type, and if it matches the Function is run to coerce it to the correct type.  That return value is then type checked against the property's type constraint.
+
+You can call `addCoercion()` multiple times on the same type to add coercions from different FROM types.
+
+__ARGUMENTS__
+
+* TYPE - The Type name that will have a coercion added to it.
+* FROM - The type that the passed in value will be compared against. If the value validates as a valid FROM type, the coercion function will be run to get the coerced value.
+* FUNCTION (VALUE) - The function should parse the value and return the coerced value.
+
+__RETURNS__
+
+this
+
+__EXAMPLE__
+
+````javascript
+
+	//To add a new coercion, globally.
+	expound.addCoercion('isNumber', 'isArray', function (value) {
+    // In this non-real example, were going to assume that the first value in an array is what they really meant.
+		return value[0];
+	});
+
+	//then later
+  var myObj={};
+	var meta_myObj = expound(myObj).property({
+		name: 'a',
+		type: 'isNumber',
+		coerce: true
+	});
+
+	//Now we can safely do this
+	myObj.a = [45];
+
+  //And it will safely assign the number 45 to myObj.a
 ````
 ---------------------------------------
 <A NAME="roadmap" />
