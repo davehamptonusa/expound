@@ -23,12 +23,23 @@ var
 				target = _.include(Object.keys(this), 'obj') ? this.obj : this,
 				prop = {
 					//tool for type constraint checking....
-					passesTypeConstraint: function () {
-						if (this.type && !self.types[this.type](this.value)) {
+					passesTypeConstraint: function (superType) {
+						//Determine if we are checking our self or the passed in value
+						var type = (superType || this.type), 
+							checkType;
+
+						//Bail if we have nothing to check 
+						if (!type) { return true; }
+						checkType = self.types[type];
+						
+						//Check parents recursively
+						checkType && checkType.extendsType && this.passesTypeConstraint(checkType.extendsType);
+						if (checkType && !checkType.constraint(this.value)) {
 							this.value = undefined;
 							this.valueHasBeenSet = false;
-							Throw('Value does not pass type constraint. Expecting: ' + this.type);
+							Throw('Value does not pass type constraint. Expecting: ' + type);
 						}
+						return true;
 					}
 				};
 
@@ -44,7 +55,7 @@ var
 				_.isFunction(spec[attr]) || Throw(attr + ' attribute must be ia Function');
 			});
 			//Type Constraints
-			spec.type && (typeof self.types[spec.type] || Throw(spec.type + ' is not a defined Type Constraint'));
+			spec.type && (typeof self.types[spec.type] !== 'undefined' || Throw(spec.type + ' is not a defined Type Constraint'));
 
 			//Extend our model
 			_.extend(prop, defaultProps, spec);
@@ -122,22 +133,33 @@ property.call(expound, {
 
 //Can't use expound on this as its needed in the constructor
 expound.types = {
-	"isArray": function (arg) { return _.isArray(arg); },
-	"isBoolean": function (arg) { return _.isBoolean(arg); },
-	"isDate": function (arg) { return _.isDate(arg); },
-	"isFunction": function (arg) { return _.isFunction(arg); },
-	"isNumber": function (arg) { return _.isNumber(arg); },
-	"isString": function (arg) { return _.isString(arg); },
-	"isRegExp": function (arg) { return _.isRegExp(arg); }
+	"isArray": { constraint: function (arg) { return _.isArray(arg); }},
+	"isBoolean": { constraint:  function (arg) { return _.isBoolean(arg); }},
+	"isDate": { constraint: function (arg) { return _.isDate(arg); }},
+	"isFunction": { constraint: function (arg) { return _.isFunction(arg); }},
+	"isNumber": { constraint: function (arg) { return _.isNumber(arg); }},
+	"isString": { constraint: function (arg) { return _.isString(arg); }},
+	"isRegExp": { constraint: function (arg) { return _.isRegExp(arg); }},
+	"isObject": { constraint: function(arg) { return (typeof arg === 'object' &&  !_.isArray(arg) && !_.isRegExp(arg) && !_.isFunction(arg)); }}
 };
+
+//Set the base constraint as Null
+_.each(expound.types, function (type) {
+	type.extendsType = null;
+});
 
 // Grab a handle to expound myself
 extend = expound(expound);
 //expound.property when called without an object extends expound itself.  Useful for plug-ins
 extend.property({
 	name: "addType",
-	value: function (name, func) {
-		this.types[name] = func;
+	value: function (type, extendsType, func) {
+		
+		(typeof this.types[extendsType] === 'undefined') && Throw(extendsType + ' is not a defined Type Constraint.');
+		this.types[type] = {
+			constraint: func,
+			extendsType: extendsType
+		};
 		return this;
 	},
 	writable: false
@@ -146,7 +168,7 @@ extend.property({
 extend.property({
 	name: 'hasType',
 	value: function (name) {
-		return _.isFunction(this.types[name]);
+		return typeof this.types[name] === 'object' ? true : false;;
 	},
 	writable: false
 });

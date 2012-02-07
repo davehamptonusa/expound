@@ -4,7 +4,7 @@ var test = require("tap").test,
 
 //All atributes are Accessor Descriptors.  Writable and value are spoofed by modifying get and set
 test("methods", { skip:false }, function (t) {
-	t.plan(27);
+	t.plan(29);
 	t.ok(true, "true is ok -- all is right with the universe");
 	var obj = {}, keys;
 	obj = {};
@@ -120,6 +120,16 @@ test("methods", { skip:false }, function (t) {
 	}, 'Throws expecting a String');
 
 	obj = {};
+	t.doesNotThrow(	function() {
+		expound(obj).property({
+			name: "a",
+			type: 'isObject',
+			value: {}
+		});
+		var foo = obj.a;
+	}, 'does not Throw, expecting an object');
+
+	obj = {};
 	t.throws(	function() {
 		expound(obj).property({
 			name: "a",
@@ -145,7 +155,7 @@ test("methods", { skip:false }, function (t) {
 	obj = {};
 	var handler = expound(obj);
 	t.doesNotThrow( function () {
-		handler.addType('isLessThanTen', function (value) {
+		handler.addType('isLessThanTen', 'isNumber', function (value) {
 			return value < 10 ? true: false;
 		});
 	}, "Creating a new Type doesnt throw an error.");
@@ -174,7 +184,7 @@ test("methods", { skip:false }, function (t) {
 	obj = {};
 	var handler = expound(obj);
 	t.doesNotThrow( function () {
-		expound.addType('isLessThanTen', function (value) {
+		expound.addType('isLessThanTen', 'isNumber', function (value) {
 			return value < 10 ? true: false;
 		});
 	}, "Creating a new Global Type doesnt throw an error.");
@@ -198,10 +208,15 @@ test("methods", { skip:false }, function (t) {
 	obj = {};
 	var handler = expound(obj);
 	t.doesNotThrow( function () {
-		expound.addType('isLessThanTen', function (value) {
-			return (expound.types.isNumber(value) && value < 10) ? true: false;
+		expound.addType('isLessThanTen', 'isNumber', function (value) {
+			return value < 10;
 		});
 	}, "Creating a new global Type doesnt throw an error.");
+	t.throws( function () {
+		expound.addType('isChrisPaterson', 'isADude', function (value) {
+			return value < 10;
+		});
+	}, "Creating a new global Type with an undefined extension type throws an error.");
 	t.throws( function () {
 		handler.property({
 			name: 'a',
