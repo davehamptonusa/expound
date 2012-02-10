@@ -48,7 +48,7 @@ As a side note, asynchronous assignments can easily be handled through using a m
 	});
 	
 	//To add a new type, "globally"
-	expound.addType('isLessThanTen', function (value) {
+	expound.addType('isLessThanTen', 'isNumber', function (value) {
 		return expound.types.isNumber(value) && value < 10;
 	});
 ```	  
@@ -230,7 +230,7 @@ Used to add types to either the "Global" expound instance or a local meta-object
 __ARGUMENTS__
 
 * NAME - A Unique Name to add as a type.  Names are stored in a hash, and handle types descend from the global type, so you can overwrite them.  Names are shared amongst all types (Global, object and Sub) so you may find it useful to use a naming convention like `isInteger::IsNumber`.  But it is not necssary.
-* EXTENDS - The name of the type that this is extending.  This type must exist in either the object or the global typelist.  It will recursively check its type extension hierachry starting at the top and working down.  So if `isInteger` extends `isNumber, and `isLessThanTen` extends `isInteger` expound will check to see if the value passes `isNumber`, then `isInteger` and then finally `isLessTahnTen`.
+* EXTENDS - The name of the type that this is extending.  This type must exist in either the object or the global typelist.  It will recursively check its type extension hierachry starting at the top and working down.  So if `isInteger` extends `isNumber`, and `isLessThanTen` extends `isInteger` expound will check to see if the value passes `isNumber`, then `isInteger` and then finally `isLessTahnTen`.
 * FUNCTION (VALUE) - The function should parse the value and return true if it passes, false otherwise.
 
 __RETURNS__
@@ -252,9 +252,13 @@ __EXAMPLE__
 <A NAME="addCoercion" />
 ### addCoercion(TYPE, FROM, FUNCTION)
 
-Used to add coercions to types.  All Coercions are added to types and are called if the property constructor has `coerce: true` set.  They can, however, be added to an object, via its meta-handle, or to expound directly.  The value is first test against the FROM value, which is a named type or sub-type, and if it matches the Function is run to coerce it to the correct type.  That return value is then type checked against the property's type constraint.
+Used to add coercions to types.  All Coercions are added to types and are called if the property constructor has `coerce: true` set AND the initial type constraint fails.  They can, however, be added to an object, via its meta-handle, or to expound directly.  
+
+If the inital type constraint fails, the value is first tested against the FROM value, which is a named type or sub-type. If it matches the FUNCTION argument is run to coerce it to the correct type.  That return value is then type checked against the property's type constraint.
 
 You can call `addCoercion()` multiple times on the same type to add coercions from different FROM types.
+
+Coercions run only at the first level, so you can't coerce a subtype to another type that needs to be coerced.  That would be just lazy.
 
 __ARGUMENTS__
 
@@ -292,7 +296,6 @@ __EXAMPLE__
 ---------------------------------------
 <A NAME="roadmap" />
 ## On the RoadMap
-		//coerce: Takes a value and uses the defined type to create the property.  for example, pass in the user ID, but have it auto and build the user object and store that in the property
 		//delgates: useful for calling other methods in the context of this attribute
 		//enableRollback:  Allows attribute values to be rolled back.  Takes integer (0++).  Zero means no rollback.  Keeps history up to value given. keyword 'forever' keeps indefinate history until you run out of memory...
 		//rollback: takes an integer.  Rolls back the value to the nth previous version.  Fails if version doesn't exist.  enableRollback must be true.  Rollbacks will be wrapped and trigger.  Not available for functions.
