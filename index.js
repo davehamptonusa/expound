@@ -14,7 +14,8 @@ var
 			configurable: false,
 			required: false,
 			lazy: true,
-			valueHasBeenSet: false
+			valueHasBeenSet: false,
+			coerce: false
 		},
 
 		property = function(spec) {
@@ -23,21 +24,64 @@ var
 				target = _.include(Object.keys(this), 'obj') ? this.obj : this,
 				prop = {
 					//tool for type constraint checking....
-					passesTypeConstraint: function (superType) {
-						//Determine if we are checking our self or the passed in value
-						var type = (superType || this.type), 
-							checkType;
+					passesTypeConstraint: function () {
+						var coercions, coercionNames, activeCoercion,
+							resetValueAndThrow = function (message) {
+								this.value = undefined;
+								this.valueHasBeenSet = false;
+								Throw(message);
+							},
+							checkConstraint = function (type) {
+							var checkType;
+							//Bail if we have nothing to check 
+							if (!type) { return true; }
+							(checkType = self.types[type]) || Throw('Type Constraint "' + type +'" No longer exists.');
+							
+							//Check parents recursively
+							checkType.extendsType && checkConstraint.call(this, checkType.extendsType);
+							if (!checkType.constraint(this.value)) {
+								Throw('Value does not pass type constraint. Expecting: ' + type);
+							}
+							return true;
+						};
+						try{
+							return checkConstraint.call(this, this.type);
+						}
 
-						//Bail if we have nothing to check 
-						if (!type) { return true; }
-						checkType = self.types[type];
-						
-						//Check parents recursively
-						checkType && checkType.extendsType && this.passesTypeConstraint(checkType.extendsType);
-						if (checkType && !checkType.constraint(this.value)) {
-							this.value = undefined;
-							this.valueHasBeenSet = false;
-							Throw('Value does not pass type constraint. Expecting: ' + type);
+						//This is the entire coercion funcitonality
+						//
+						catch(err){
+							//Check to see if we have coerce set and if the type has coercions
+							coercions = self.types[this.type].coerceFrom;
+							coercionNames = Object.keys(coercions);
+							if (!this.coerce || coercionNames.length === 0) {
+								resetValueAndThrow(err.message);
+							}
+
+							//If it does, find the first coercion that matches the value
+							activeCoercion = _.find(coercionNames, function (fromType) {
+								try {
+									var foo = checkConstraint.call(this, fromType);
+									return checkConstraint.call(this, fromType);
+								}
+								catch (err) {
+									return false;
+								}
+							}, this);
+							//and then run the function associated with that coercion
+							if (activeCoercion) {
+								this.value = coercions[activeCoercion](this.value);
+							}
+							else {
+								resetValueAndThrow(err.message + '. Coerce is set to true, but the value does not match any registered coercions for the type');
+							}
+							//try to check the constraint against the new value
+							try {
+								checkConstraint.call(this, this.type);
+							}
+							catch(err) {
+								resetValueAndThrow('Coerced ' + err.message);
+							}
 						}
 						return true;
 					}
@@ -47,7 +91,7 @@ var
 			//Name
 			_.isString(spec.name) || Throw('The name of the attribute must be a string');
 			// Booleans
-			_.each( _.intersection(['writable', 'enumerable', 'configurable', 'required', 'lazy'], Object.keys(spec)), function (attr) {
+			_.each( _.intersection(['writable', 'enumerable', 'configurable', 'required', 'lazy', 'coerce'], Object.keys(spec)), function (attr) {
 				_.isBoolean(spec[attr]) || Throw(attr + ' attribute must be boolean');
 			});
 			//Functions
@@ -146,6 +190,7 @@ expound.types = {
 //Set the base constraint as Null
 _.each(expound.types, function (type) {
 	type.extendsType = null;
+	type.coerceFrom ={};
 });
 
 // Grab a handle to expound myself
@@ -158,7 +203,8 @@ extend.property({
 		(typeof this.types[extendsType] === 'undefined') && Throw(extendsType + ' is not a defined Type Constraint.');
 		this.types[type] = {
 			constraint: func,
-			extendsType: extendsType
+			extendsType: extendsType,
+			coerceFrom: {}
 		};
 		return this;
 	},
@@ -168,10 +214,24 @@ extend.property({
 extend.property({
 	name: 'hasType',
 	value: function (name) {
-		return typeof this.types[name] === 'object' ? true : false;;
+		return typeof this.types[name] === 'object' ? true : false;
 	},
 	writable: false
 });
 
+extend.property({
+	name: 'addCoercion',
+	value: function (type, from, func) {
+		//Check Variables
+		(typeof this.types[type] === 'undefined') && Throw(type + ' is not a defined Type Constraint.');
+		(typeof this.types[from] === 'undefined') && Throw(from + ' is not a defined Type Constraint.');
+		_.isFunction(func) || Throw('You must coerce using a function.');
+
+		//Assign
+		this.types[type].coerceFrom[from] = func;
+		return this;
+	},
+	writable: false
+});
 module.exports = expound;
 

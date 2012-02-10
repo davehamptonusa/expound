@@ -92,6 +92,8 @@ These are the attributes for the `property() method`
 
 * [property](#property)
 * [setType](#setType)
+* [hasType](#hasType)
+* [addCoercion](#addCoercion)
 
 ###[Road Map](#roadmap)
 
@@ -221,7 +223,7 @@ __EXAMPLE__
 ---------------------------------------
 
 <A NAME="addType" />
-### addType(NAME, FUNCTION)
+### addType(NAME, EXTENDS, FUNCTION)
 
 Used to add types to either the "Global" expound instance or a local meta-object handle of an object.  Types usually extend an existing type. This is useful for creating hierachies of type checks and for coercions.
 
