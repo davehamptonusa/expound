@@ -125,11 +125,13 @@ var
 				prop.oldValue = prop.value;
 
 				//Check for writability
-				prop.writable && (prop.value = newValue) && (prop.valueHasBeenSet = true);
+				!prop.writable && prop.valueHasBeenSet && Throw ('Can not rewrite to a non-writable property');
+
+				prop.value = newValue;
+				prop.valueHasBeenSet = true;
 				prop.passesTypeConstraint();
 
-				//even attempting to set a non writable object returns the attmepted value.	weird.
-				return newValue;
+				return prop.value;
 			};	
 
 			//wrap the setFunction if wrapping

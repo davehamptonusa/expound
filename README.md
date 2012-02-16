@@ -109,7 +109,7 @@ These are the attributes for the `property() method`
 
 <A NAME="writable" />
 ### writable (default: true)
-> Boolean to set whether or not you may change the value of the property
+> Boolean to set whether or not you may change the value of the property.  All values are writable at least once.  So if you create an attibute without a value set, you can still set it.  But if writable is set to false, you can not re-write it.  If you create a property with the value set in the constructor of that property, you can not write to it.  Internally, it checks to see if a 'hasBeenSet' flag has been marked as true.
 
 <A NAME="enumerable" />
 ### enumerable (default: true)
