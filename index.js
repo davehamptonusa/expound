@@ -202,7 +202,10 @@ extend.property({
 	name: "addType",
 	value: function (type, extendsType, func) {
 		
-		(typeof this.types[extendsType] === 'undefined') && Throw(extendsType + ' is not a defined Type Constraint.');
+		if (typeof this.types[extendsType] === 'undefined' &&
+			extendsType !== null) {
+			Throw('When adding type ' + extendsType + ' is not "null" or a defined Type Constraint.');
+    }
 		this.types[type] = {
 			constraint: func,
 			extendsType: extendsType,

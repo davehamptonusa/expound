@@ -1,10 +1,11 @@
 var test = require("tap").test,
+		fs = require('fs'),
 		_ = require("underscore"),
 		expound = require('../index.js');
 
 //All atributes are Accessor Descriptors.  Writable and value are spoofed by modifying get and set
 test("methods", { skip:false }, function (t) {
-	t.plan(29);
+	t.plan(33);
 	t.ok(true, "true is ok -- all is right with the universe");
 	var obj = {}, keys;
 	obj = {};
@@ -233,4 +234,24 @@ test("methods", { skip:false }, function (t) {
 		});
 		var foo = obj.b;
 	}, 'Value passes custom type check');
+	t.doesNotThrow(function () {
+		expound.addType('canStat', null, function (value) {
+			var stat = fs.statSync(value);
+			if (stat) { return true };
+			return false;
+		});
+	}, "Creating a new top level global Type does not throw an error.");
+	t.ok(expound.hasType('canStat'), "expound has the top level global type");
+
+	t.doesNotThrow(function () {
+		expound.addType('isValidDirectory', 'canStat', function (value) {
+			var stat;
+			//passes if value is a valid directory or is null
+			if (value === null) { return true };
+			return fs.statSync(value).isDirectory();
+		});
+	}, "Creating a new top second level global Type from a new top level global type does not throw an error.");
+	t.ok(expound.hasType('isValidDirectory'), "expound has the new second level global type");
+
+
 });
