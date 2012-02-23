@@ -17,6 +17,15 @@ var
 			valueHasBeenSet: false,
 			coerce: false
 		},
+		//Private function to build values or throw error
+		buildValue = function (target) {
+ 			try {
+				this.value = this.builder.call(target);
+			}
+			catch(err) {
+				Throw('Builder Function does not return for attribute ' + this.name + '. Gives: ' + err.message);
+			}
+		},
 
 		property = function(spec) {
 			var 
@@ -99,7 +108,7 @@ var
 				_.isFunction(spec[attr]) || Throw(attr + ' attribute must be ia Function');
 			});
 			//Type Constraints
-			spec.type && (typeof self.types[spec.type] !== 'undefined' || Throw(spec.type + ' is not a defined Type Constraint'));
+			spec.type && (typeof self.types[spec.type] !== 'undefined' || Throw(spec.type + ' is not a defined Type Constraint for' + spec.name));
 
 			//Extend our model
 			_.extend(prop, defaultProps, spec);
@@ -108,11 +117,11 @@ var
 			_.include(Object.keys(prop), 'value') && (prop.valueHasBeenSet = true);
 
 			//test for required
-			prop.required && !prop.valueHasBeenSet && !prop.builder && Throw('Required Property with no value or builder method'); 
+			prop.required && !prop.valueHasBeenSet && !prop.builder && Throw('Required Property with no value or builder method for ' + spec.name); 
 
 			//Assign a value to default or non-lazy builders
 			if ( !prop.valueHasBeenSet && prop.builder && !prop.lazy ) {
-				((prop.value = prop.builder.call(self.ob)) || Throw('Builder Function does not return'));
+				buildValue.call(prop, target);
 				prop.valueHasBeenSet = true;
 			}
 
@@ -125,7 +134,7 @@ var
 				prop.oldValue = prop.value;
 
 				//Check for writability
-				!prop.writable && prop.valueHasBeenSet && Throw ('Can not rewrite to a non-writable property');
+				!prop.writable && prop.valueHasBeenSet && Throw ('Can not rewrite to a non-writable property for attribute: '+ spec.name);
 
 				prop.value = newValue;
 				prop.valueHasBeenSet = true;
@@ -143,7 +152,7 @@ var
 				var definition = {};
 				
 				definition.get = function() {
-					!prop.valueHasBeenSet && prop.builder && ((prop.value = prop.builder.call(target)) || Throw('Builder Function does not return'));
+					!prop.valueHasBeenSet && prop.builder && buildValue.call(prop, target);
 					prop.valueHasBeenSet = true;
 					prop.passesTypeConstraint();
 					return prop.value;	

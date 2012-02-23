@@ -3,7 +3,7 @@ var test = require("tap").test,
 
 //All atributes are Accessor Descriptors.  Writable and value are spoofed by modifying get and set
 test("methods", { skip:false }, function (t) {
-	t.plan(19);
+	t.plan(18);
 	t.ok(true, "true is ok -- all is right with the universe");
 
 	var obj1 = {},
@@ -101,7 +101,7 @@ test("methods", { skip:false }, function (t) {
 		expound(this).property({
 			name: "a",
 			builder: function () {
-				return this.b
+				return undefined;
 			},
 			required: true,
 			lazy: false
@@ -109,11 +109,10 @@ test("methods", { skip:false }, function (t) {
 		this.b = 37;
 	}
 
-	t.throws(	function() {
+	t.doesNotThrow(	function() {
 		obj3 = new BuildObj();
 	}, 'Building a required, non-lazy property with a builder throws an error.');
-	t.equal(typeof obj3.a, 'number', 'The constructed object is created and typeof works');
-	t.equal(obj3.a, 37, 'The constructed object with the builder method and evals correctly');
+	t.equal(typeof obj3.a, 'undefined', 'The constructed object is created and typeof works');
 
 	//test a builder with values set outside the builder
 	Obj3={};
@@ -129,10 +128,10 @@ test("methods", { skip:false }, function (t) {
 		});
 	}
 
-	t.throws(	function() {
+	t.doesNotThrow(	function() {
 		obj3 = new BuildObj();
-	}, 'Building a required, non-lazy property with a builder does throw an error.');
+	}, 'Building a required, non-lazy property with a builder that returns undefined does throw an error.');
 	obj3.b = 37;
-	t.equal(typeof obj3.a, 'number', 'The object is created and typeof works');
-	t.equal(obj3.a, 37, 'The object is with the builder method and evals correctly');
+	t.equal(typeof obj3.a, 'undefined', 'The Object was not assigned to b as it was not lazy');
+	t.equal(obj3.a, undefined, 'The object is with the builder method and evals correctly');
 });
