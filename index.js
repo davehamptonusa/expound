@@ -41,18 +41,18 @@ var
 								Throw(message);
 							},
 							checkConstraint = function (type) {
-							var checkType;
-							//Bail if we have nothing to check 
-							if (!type) { return true; }
-							(checkType = self.types[type]) || Throw('Type Constraint "' + type +'" No longer exists.');
-							
-							//Check parents recursively
-							checkType.extendsType && checkConstraint.call(this, checkType.extendsType);
-							if (!checkType.constraint(this.value)) {
-								Throw('Value does not pass type constraint. Expecting: ' + type);
-							}
-							return true;
-						};
+								var checkType;
+								//Bail if we have nothing to check 
+								if (!type) { return true; }
+								(checkType = self.types[type]) || Throw('Type Constraint "' + type +'" No longer exists.');
+								
+								//Check parents recursively
+								checkType.extendsType && checkConstraint.call(this, checkType.extendsType);
+								if (!checkType.constraint(this.value)) {
+									Throw('Value does not pass type constraint. Expecting: ' + type);
+								}
+								return true;
+							};
 						try{
 							return checkConstraint.call(this, this.type);
 						}
