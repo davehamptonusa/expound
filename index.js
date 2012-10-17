@@ -53,7 +53,7 @@ var expound, extend, throwExpound = function (msg) {
 								checkConstraint.call(this, checkType.extendsType);
 							}
 							if (!checkType.constraint(this.value)) {
-								throwExpound('Value does not pass type constraint. Expecting: ' + type);
+								throwExpound('Value ' + this.name + ' does not pass type constraint. Expecting: ' + type);
 							}
 							return true;
 						};
